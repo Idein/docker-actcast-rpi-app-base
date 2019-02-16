@@ -1,0 +1,48 @@
+version: 2
+
+references:
+  defaults: &defaults
+    docker:
+      - image: docker:latest
+    environment:
+      TZ: "/usr/share/zoneinfo/Asia/Tokyo"
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install make
+          command: apk add make
+      - run:
+          name: Login docker hub
+          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+      - run:
+          name: Enable usermode emulation
+          command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      - run:
+          name: Build docker image
+          command: make dist
+      - store_artifacts:
+          path: actcast-rpi-app-base.tar.gz
+      - run:
+          name: Release docker image
+          command: |
+            if [ "${CIRCLE_TAG}" = "stretch" ]
+            then
+              docker tag idein/actcast-rpi-app-base:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
+              docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
+            fi
