@@ -23,9 +23,12 @@ chroot ${ROOTFS_DIR} ./debootstrap/debootstrap --second-stage --no-check-gpg
 wget http://archive.raspbian.org/raspbian.public.key           -O - | chroot ${ROOTFS_DIR} apt-key add -
 wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | chroot ${ROOTFS_DIR} apt-key add -
 
-# video group required to VC4 GPGPU
+# video group required to use VC4 GPGPU
 # see. https://github.com/Idein/actcast/issues/2269#issuecomment-463014012
 chroot ${ROOTFS_DIR} usermod -aG video root
+
+# audio group required to use sound devices
+chroot ${ROOTFS_DIR} usermod -aG audio root
 
 # prevent starting services when "apt install"
 cat > "${ROOTFS_DIR}/usr/sbin/policy-rc.d" <<'EOF'
