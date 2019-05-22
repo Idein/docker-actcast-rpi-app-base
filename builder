@@ -64,7 +64,7 @@ EOF
 
 # set apt source
 cat > "${ROOTFS_DIR}/etc/apt/sources.list" <<EOF
-deb http://archive.raspbian.org/raspbian ${RASPBIAN_VERSION} main contrib non-free rpi firmware
+deb http://archive.raspbian.org/raspbian ${RASPBIAN_VERSION} main firmware
 EOF
 
 chroot ${ROOTFS_DIR} bash -c 'apt-get update && apt-get dist-upgrade -y'
