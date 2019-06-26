@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 LABEL maintainer "notogawa <n.ohkawa@idein.jp>"
 
 RUN apt-get update \

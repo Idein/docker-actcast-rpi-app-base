@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xue
 
-readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-stretch}
+readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-buster}
 readonly RASPBIAN_MIRROR=${RASPBIAN_MIRROR:-'http://archive.raspbian.org/raspbian'}
 readonly TMP_DIR=$(mktemp -d /tmp/docker-builder.XXXXXXXXXX)
 readonly ROOTFS_DIR=$TMP_DIR/rootfs
