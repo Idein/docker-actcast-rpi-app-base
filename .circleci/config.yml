@@ -3,7 +3,7 @@ version: 2
 references:
   defaults: &defaults
     docker:
-      - image: docker:latest
+      - image: docker:stable-git
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
@@ -44,5 +44,10 @@ jobs:
             if [ "${CIRCLE_TAG}" = "buster" ]
             then
               docker tag idein/actcast-rpi-app-base:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
+              docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
+            fi
+            if [ "${CIRCLE_TAG}" = "buster-1" ]
+            then
+              docker build -t idein/actcast-rpi-app-base:$CIRCLE_TAG -f Dockerfile.$CIRCLE_TAG .
               docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
             fi
