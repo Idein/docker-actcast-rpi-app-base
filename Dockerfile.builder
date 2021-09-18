@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 LABEL maintainer "notogawa <n.ohkawa@idein.jp>"
 
 RUN apt-get update \
