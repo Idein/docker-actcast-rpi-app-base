@@ -19,13 +19,12 @@ idein/actcast-rpi-app-base   latest     4413af65372d   57 minutes ago   87.5MB
 ## Upgrade
 
 Raspberry Pi OS のアップグレードに応じて新たなバージョンのベースイメージを作成する場合，
-リポジトリ内のバージョンコードネーム(stretch, buster, bullseye等)を新しいコードネームに置換する．
+リポジトリ内のバージョンコードネーム(stretch, buster等)を新しいコードネームに置換する．
 
 ```console
-$ git grep bullseye
-.circleci/config.yml:            if [ "${CIRCLE_TAG}" = "bullseye" ]
-Dockerfile.builder:FROM debian:bullseye
-builder:readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-bullseye}
+$ git grep [codename]
+Dockerfile.builder:FROM debian:[codename]
+builder:readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-[codename]}
 ```
 
 ## Release
@@ -33,17 +32,17 @@ builder:readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-bullseye}
 バージョンコードネームのタグを打ってpushするとCircleCI上でイメージがビルドされ，
 `idein/actcast-rpi-app-base:[codename]` としてhubにアップロードされる．
 
-```
-$ git tag bullseye
-$ git push origin bullseye
+```console
+$ git tag [codename]
+$ git push origin [codename]
 (wait...)
-$ docker pull idein/actcast-rpi-app-base:bullseye
+$ docker pull idein/actcast-rpi-app-base:[codename]
 ```
 
 ## Patch Release
 
 同バージョンコードネームでもベースイメージにパッチを当てて(≒何らかの変更をして)リリースする必要が生じた場合，
-名前を [codename]-1, [codename]-2, … としてリリースする．
+tag名を [codename]-1, [codename]-2, … としてリリースする．
 
 ## actdkが作成するアプリベースイメージの変更
 

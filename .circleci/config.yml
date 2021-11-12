@@ -46,7 +46,7 @@ jobs:
       - run:
           name: Release docker image
           command: |
-            if [ "${CIRCLE_TAG}" = "bullseye" ]
+            if [ -n "${CIRCLE_TAG}" ]
             then
               docker tag idein/actcast-rpi-app-base:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
               docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
