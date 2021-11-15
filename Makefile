@@ -2,7 +2,7 @@ all: actcast-rpi-app-base
 
 dist: actcast-rpi-app-base.tar.gz
 
-actcast-rpi-app-builder: Dockerfile.builder
+actcast-rpi-app-builder: Dockerfile.builder builder
 	docker build -f $< -t idein/$@ .
 	touch $@
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xue
 
-readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-buster}
+readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-bullseye}
 readonly RASPBIAN_MIRROR=${RASPBIAN_MIRROR:-'http://archive.raspbian.org/raspbian'}
 readonly TMP_DIR=$(mktemp -d /tmp/docker-builder.XXXXXXXXXX)
 readonly ROOTFS_DIR=$TMP_DIR/rootfs
@@ -29,6 +29,14 @@ chroot ${ROOTFS_DIR} usermod -aG video root
 
 # audio group required to use sound devices
 chroot ${ROOTFS_DIR} usermod -aG audio root
+
+# integrate https://github.com/Idein/docker-actcast-rpi-app-base/pull/3
+chroot ${ROOTFS_DIR} groupadd -f -g 997 gpio
+chroot ${ROOTFS_DIR} usermod -aG gpio root
+chroot ${ROOTFS_DIR} groupadd -f -g 998 i2c
+chroot ${ROOTFS_DIR} usermod -aG i2c  root
+chroot ${ROOTFS_DIR} groupadd -f -g 999 spi
+chroot ${ROOTFS_DIR} usermod -aG spi  root
 
 # prevent starting services when "apt install"
 cat > "${ROOTFS_DIR}/usr/sbin/policy-rc.d" <<'EOF'

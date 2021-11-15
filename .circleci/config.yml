@@ -4,6 +4,9 @@ references:
   defaults: &defaults
     docker:
       - image: docker:stable-git
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
@@ -12,6 +15,8 @@ workflows:
   build_and_deploy:
     jobs:
       - build:
+          context:
+            - docker-hub-creds
           filters:
             branches:
               only: /.*/
@@ -41,13 +46,8 @@ jobs:
       - run:
           name: Release docker image
           command: |
-            if [ "${CIRCLE_TAG}" = "buster" ]
+            if [ -n "${CIRCLE_TAG}" ]
             then
               docker tag idein/actcast-rpi-app-base:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
-              docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
-            fi
-            if [ "${CIRCLE_TAG}" = "buster-1" ]
-            then
-              docker build -t idein/actcast-rpi-app-base:$CIRCLE_TAG -f Dockerfile.$CIRCLE_TAG .
               docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
             fi
