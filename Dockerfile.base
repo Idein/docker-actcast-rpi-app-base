@@ -5,6 +5,7 @@ ADD rootfs.tar.xz  /
 
 ENV LC_ALL C.UTF-8
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LD_LIBRARY_PATH /opt/vc/lib
 ENV DEBIAN_FRONTEND noninteractive
 
 WORKDIR /root

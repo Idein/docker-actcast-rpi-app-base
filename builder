@@ -38,6 +38,9 @@ chroot ${ROOTFS_DIR} usermod -aG i2c  root
 chroot ${ROOTFS_DIR} groupadd -f -g 999 spi
 chroot ${ROOTFS_DIR} usermod -aG spi  root
 
+# make old videocore firm dir
+mkdir -p ${ROOTFS_DIR}/opt/vc
+
 # prevent starting services when "apt install"
 cat > "${ROOTFS_DIR}/usr/sbin/policy-rc.d" <<'EOF'
 #!/bin/sh
