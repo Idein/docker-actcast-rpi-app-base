@@ -21,9 +21,10 @@ $ make
 すると，`idein/actcast-rpi-app-base` イメージと `idein/actcast-rpi-app-base-python` イメージが作成される．
 
 ```console
-$ docker images idein/actcast-rpi-app-base
-REPOSITORY                   TAG        IMAGE ID       CREATED          SIZE
-idein/actcast-rpi-app-base   latest     4413af65372d   57 minutes ago   87.5MB
+$ docker images
+REPOSITORY                          TAG        IMAGE ID       CREATED          SIZE
+idein/actcast-rpi-app-base          latest     4413af65372d   57 minutes ago   87.5MB
+idein/actcast-rpi-app-base-python   latest     b5cd2eca6a3a   19 minutes ago   189MB
 ```
 
 
