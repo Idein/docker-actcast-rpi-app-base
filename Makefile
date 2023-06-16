@@ -1,5 +1,7 @@
+.PHONY: all
 all: actcast-rpi-app-base-python
 
+.PHONY: dist
 dist: dist/actcast-rpi-app-base.tar.gz dist/actcast-rpi-app-base-python.tar.gz
 
 actcast-rpi-app-builder: Dockerfile.builder builder
@@ -26,19 +28,23 @@ dist/actcast-rpi-app-base.tar.gz dist/actcast-rpi-app-base-python.tar.gz: dist/%
 	mkdir -p $(dir $@)
 	docker save idein/$< | gzip > $@
 
+.PHONY: clean
 clean: clean-actcast-rpi-app-builder clean-actcast-rpi-app-base clean-actcast-rpi-app-base-python
-	-rm rootfs.tar.xz
-	-rm -rf dist
+	-$(RM) rootfs.tar.xz
+	-$(RM) -r dist
 
+.PHONY: clean-actcast-rpi-app-builder
 clean-actcast-rpi-app-builder:
-	-rm actcast-rpi-app-builder
+	-$(RM) actcast-rpi-app-builder
 	-docker rmi idein/actcast-rpi-app-builder
 
+.PHONY: clean-actcast-rpi-app-base
 clean-actcast-rpi-app-base:
-	-rm actcast-rpi-app-base
+	-$(RM) actcast-rpi-app-base
 	-docker rmi idein/actcast-rpi-app-base
 
+.PHONY: clean-actcast-rpi-app-base-python
 clean-actcast-rpi-app-base-python:
-	-rm actcast-rpi-app-base-python
+	-$(RM) actcast-rpi-app-base-python
 	-docker rmi idein/actcast-rpi-app-base-python
 
