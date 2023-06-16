@@ -26,6 +26,8 @@ workflows:
 jobs:
   build:
     <<: *defaults
+    environment:
+      DOCKER_BUILDKIT: 1
     steps:
       - checkout
       - setup_remote_docker:
