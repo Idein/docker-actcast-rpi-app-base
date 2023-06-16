@@ -26,7 +26,7 @@ dist/actcast-rpi-app-base.tar.gz dist/actcast-rpi-app-base-python.tar.gz: dist/%
 	mkdir -p $(dir $@)
 	docker save idein/$< | gzip > $@
 
-clean: clean-actcast-rpi-app-builder clean-actcast-rpi-app-base
+clean: clean-actcast-rpi-app-builder clean-actcast-rpi-app-base clean-actcast-rpi-app-base-python
 	-rm rootfs.tar.xz
 	-rm -rf dist
 
@@ -37,3 +37,8 @@ clean-actcast-rpi-app-builder:
 clean-actcast-rpi-app-base:
 	-rm actcast-rpi-app-base
 	-docker rmi idein/actcast-rpi-app-base
+
+clean-actcast-rpi-app-base-python:
+	-rm actcast-rpi-app-base-python
+	-docker rmi idein/actcast-rpi-app-base-python
+
