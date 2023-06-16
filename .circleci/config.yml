@@ -42,7 +42,7 @@ jobs:
           name: Build docker image
           command: make dist
       - store_artifacts:
-          path: actcast-rpi-app-base.tar.gz
+          path: dist
       - run:
           name: Release docker image
           command: |
