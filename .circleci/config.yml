@@ -2,11 +2,8 @@ version: 2
 
 references:
   defaults: &defaults
-    docker:
-      - image: docker:stable-git
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_PASS
+    machine:
+      image: ubuntu-2204:2022.04.2
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
@@ -26,15 +23,13 @@ workflows:
 jobs:
   build:
     <<: *defaults
-    environment:
-      DOCKER_BUILDKIT: 1
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.11
       - run:
           name: Install make
-          command: apk add make
+          command: |
+            sudo apt-get update
+            sudo apt-get install make
       - run:
           name: Login docker hub
           command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
