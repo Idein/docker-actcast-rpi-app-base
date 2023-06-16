@@ -1,5 +1,5 @@
 .PHONY: all
-all: actcast-rpi-app-base-python
+all: actcast-rpi-app-base-python actcast-rpi-app-base
 
 .PHONY: dist
 dist: dist/actcast-rpi-app-base.tar.gz dist/actcast-rpi-app-base-python.tar.gz
@@ -16,8 +16,8 @@ rootfs.tar.xz: actcast-rpi-app-builder
 	docker cp actcast-rpi-app-builder:/root/rootfs.tar.xz .
 	-docker stop actcast-rpi-app-builder
 
-actcast-rpi-app-base-python: Dockerfile.python actcast-rpi-app-base
-	docker buildx build -f $< -t idein/$@ .
+actcast-rpi-app-base-python: Dockerfile.python
+	docker buildx build -f $< -t idein/$@ --load .
 	touch $@
 
 actcast-rpi-app-base: Dockerfile.base rootfs.tar.xz
