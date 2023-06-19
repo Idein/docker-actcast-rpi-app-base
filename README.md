@@ -42,7 +42,7 @@ builder:readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-[codename]}
 ## Release
 
 バージョンコードネームのタグを打ってpushするとCircleCI上でイメージがビルドされ，
-`idein/actcast-rpi-app-base:[codename]` や `idein/actcast-rpi-app-base-python:[codename]` としてhubにアップロードされる．
+`idein/actcast-rpi-app-base:[codename]` がhubにアップロードされる．
 
 ```console
 $ git tag [codename]
