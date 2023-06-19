@@ -43,7 +43,7 @@ jobs:
           command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - run:
           name: Build docker image
-          command: make dist
+          command: make dist -j
       - store_artifacts:
           path: dist
       - run:
