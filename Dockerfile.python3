@@ -77,6 +77,7 @@ RUN python -m pip wheel --wheel-dir=/root/wheels numpy
 RUN python -m pip wheel --wheel-dir=/root/wheels 'pillow<9.0.0,>=8.0.0'
 # actfw requires pillow<9.0.0,>=8.0.0
 RUN python -m pip install --no-index --find-links=/root/wheels numpy pillow
+RUN rm -rf /root/wheels
 
 CMD ["bash"]
 
