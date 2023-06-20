@@ -2,11 +2,8 @@ version: 2
 
 references:
   defaults: &defaults
-    docker:
-      - image: docker:stable-git
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_PASS
+    machine:
+      image: ubuntu-2204:2022.04.2
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
@@ -28,21 +25,27 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - setup_remote_docker
+      - run:
+          name: Setup docker
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker version
+            docker buildx create --use
+            docker buildx inspect --bootstrap
+            docker buildx ls
       - run:
           name: Install make
-          command: apk add make
-      - run:
-          name: Login docker hub
-          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+          command: |
+            sudo apt-get update
+            sudo apt-get install make
       - run:
           name: Enable usermode emulation
           command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - run:
           name: Build docker image
-          command: make dist
+          command: make dist -j
       - store_artifacts:
-          path: actcast-rpi-app-base.tar.gz
+          path: dist
       - run:
           name: Release docker image
           command: |

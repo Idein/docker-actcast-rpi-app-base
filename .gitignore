@@ -1,6 +1,7 @@
 /actcast-rpi-app-base.tar.gz
 /rootfs.tar.xz
 /actcast-rpi-app-base
+/actcast-rpi-app-base-python
 /actcast-rpi-app-builder
 
 # Created by https://www.gitignore.io/api/vim,osx,linux,emacs,windows

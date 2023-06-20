@@ -1,5 +1,15 @@
 # Actcast Raspberry Pi アプリベースイメージ
 
+Actcast アプリケーションとして作成されるDockerイメージを作成する上で, ベースとなるイメージを提供します。
+
+## 種類
+
+`idein/actcast-rpi-app-base`
+: RaspberryPi用アプリ作成のための最低限の設定をしたイメージ
+
+`idein/actcast-rpi-app-base-python`
+: RaspberryPi用アプリ作成に必要な最低限の環境にpythonとnumpyとpillowを追加したイメージ
+
 ## Build
 
 dockerをインストールしてmultiarch対応させた上で，
@@ -8,13 +18,15 @@ dockerをインストールしてmultiarch対応させた上で，
 $ make
 ```
 
-すると，`idein/actcast-rpi-app-base` イメージが作成される．
+すると，`idein/actcast-rpi-app-base` イメージと `idein/actcast-rpi-app-base-python` イメージが作成される．
 
 ```console
-$ docker images idein/actcast-rpi-app-base
-REPOSITORY                   TAG        IMAGE ID       CREATED          SIZE
-idein/actcast-rpi-app-base   latest     4413af65372d   57 minutes ago   87.5MB
+$ docker images
+REPOSITORY                          TAG        IMAGE ID       CREATED          SIZE
+idein/actcast-rpi-app-base          latest     4413af65372d   57 minutes ago   87.5MB
+idein/actcast-rpi-app-base-python   latest     b5cd2eca6a3a   19 minutes ago   189MB
 ```
+
 
 ## Upgrade
 
@@ -30,7 +42,7 @@ builder:readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-[codename]}
 ## Release
 
 バージョンコードネームのタグを打ってpushするとCircleCI上でイメージがビルドされ，
-`idein/actcast-rpi-app-base:[codename]` としてhubにアップロードされる．
+`idein/actcast-rpi-app-base:[codename]` がhubにアップロードされる．
 
 ```console
 $ git tag [codename]
