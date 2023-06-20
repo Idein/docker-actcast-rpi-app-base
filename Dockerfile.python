@@ -1,35 +1,84 @@
-FROM --platform=linux/arm/v7 python:3.9.17-slim-buster as builder
+FROM idein/actcast-rpi-app-base:buster-1
 
-# Upgrade pip
-RUN python -m pip install --upgrade pip
-RUN apt update
-RUN apt install build-essential -y
-# Build numpy as a wheel
-RUN python -m pip wheel --wheel-dir=/root/wheels 'numpy==1.25.2'
-# Build pillow as a wheel
-RUN apt-get install -y libjpeg-dev libfreetype6-dev
-# actfw requires pillow<9.0.0,>=8.0.0
-RUN python -m pip wheel --wheel-dir=/root/wheels  'pillow<9.0.0,>=8.0.0' 
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN python -m pip install --no-index --find-links=/root/wheels numpy pillow
+ENV LANG=C.UTF-8
+ENV GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568
 
-# Stage 2: Final image
-FROM idein/actcast-rpi-app-base:buster-2
+ENV PYTHON_VERSION=3.9.17
+ENV PYTHON_PIP_VERSION=23.0.1
+ENV PYTHON_SETUPTOOLS_VERSION=58.1.0
+ENV PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/0d8570dc44796f4369b652222cf176b3db6ac70e/public/get-pip.py
+ENV PYTHON_GET_PIP_SHA256=96461deced5c2a487ddc65207ec5a9cffeca0d34e7af7ea1afc470ff0d746207
 
-# Set environment variable for Python
-ENV PATH /usr/local/bin:$PATH
+RUN /bin/sh -c set -eux; \
+  apt-get update; \
+  apt-get install -y --no-install-recommends ca-certificates netbase tzdata libexpat1 libfreetype6 libjpeg62-turbo; \
+  $(apt-mark showmanual) > /savedAptMark ; \
+  apt-get install -y --no-install-recommends dpkg-dev gcc gnupg libbluetooth-dev libbz2-dev libc6-dev libdb-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev libjpeg-dev libfreetype6-dev ; \
+  wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz"; \
+  wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc"; \
+  wget -O get-pip.py "$PYTHON_GET_PIP_URL"; \
+  GNUPGHOME="$(mktemp -d)"; \
+  export GNUPGHOME; \
+  gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$GPG_KEY"; \
+  gpg --batch --verify python.tar.xz.asc python.tar.xz; \
+  gpgconf --kill all; \
+  rm -rf "$GNUPGHOME" python.tar.xz.asc; \
+  echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -; \
+  mkdir -p /usr/src/python; \
+  tar --extract --directory /usr/src/python --strip-components=1 --file python.tar.xz; \
+  rm python.tar.xz
 
-# python環境を引っこ抜いてくる （正しいやり方なのかあまり自信ない）
-COPY --from=builder /usr/local/lib/ /usr/local/lib/
-COPY --from=builder /usr/local/include/ /usr/local/include/
-COPY --from=builder /usr/local/bin/ /usr/local/bin/
+# install python
+RUN /bin/sh -c set -eux; \
+  cd /usr/src/python; \ 
+    gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
+    ./configure --build="$gnuArch" --enable-optimizations --with-lto --enable-option-checking=fatal --enable-shared --with-system-expat --without-ensurepip ; \
+    nproc="$(nproc)"; \
+    EXTRA_CFLAGS="$(dpkg-buildflags --get CFLAGS)"; \
+    LDFLAGS="$(dpkg-buildflags --get LDFLAGS)"; \
+    LDFLAGS="${LDFLAGS:--Wl},--strip-all"; \
+    make -j "$nproc" "EXTRA_CFLAGS=${EXTRA_CFLAGS:-}" "LDFLAGS=${LDFLAGS:-}" "PROFILE_TASK=${PROFILE_TASK:-}" ; \
+    rm python; \
+    make -j "$nproc" "EXTRA_CFLAGS=${EXTRA_CFLAGS:-}" "LDFLAGS=${LDFLAGS:--Wl},-rpath='\$\$ORIGIN/../lib'" "PROFILE_TASK=${PROFILE_TASK:-}" python ; \
+    make install; \
+  cd /; \
+  rm -rf /usr/src/python; \
+  for src in idle3 pydoc3 python3 python3-config; do \
+    dst="$(echo "$src" | tr -d 3)"; \
+    [ -s "/usr/local/bin/$src" ]; \
+    [ ! -e "/usr/local/bin/$dst" ]; \ 
+    ln -svT "$src" "/usr/local/bin/$dst"; \
+  done; \
+  python3 --version
 
-# RUNTIME dependency
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-     libexpat1 \
-     libfreetype6 libjpeg62-turbo \
- && apt-get clean \
- && apt-get autoclean \
- && apt-get autoremove -y \
- && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
+# install pip
+RUN /bin/sh -c set -eux; \
+  export PYTHONDONTWRITEBYTECODE=1; \
+  python get-pip.py --disable-pip-version-check --no-cache-dir --no-compile "pip==$PYTHON_PIP_VERSION" "setuptools==$PYTHON_SETUPTOOLS_VERSION" ; \
+  rm -f get-pip.py; \
+  pip --version
+
+# install python libraries
+RUN /bin/sh -c set -eux; \
+  python -m pip wheel --wheel-dir=/root/wheels numpy; \
+  python -m pip wheel --wheel-dir=/root/wheels 'pillow<9.0.0,>=8.0.0'; \
+  # actfw requires pillow<9.0.0,>=8.0.0
+  python -m pip install --no-index --find-links=/root/wheels numpy pillow; \
+  rm -rf /root/wheels
+
+# cleanup
+RUN /bin/sh -c set -eux; \
+  find /usr/local -depth \( \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name 'libpython*.a' \) \) \) -exec rm -rf '{}' + ; \
+  ldconfig; \
+  apt-mark auto '.*' > /dev/null; \
+  apt-mark manual $(cat /savedAptMark); \
+  find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' | awk '/=>/ { print $(NF-1) }' | sort -u | xargs -r dpkg-query --search | cut -d: -f1 | sort -u | xargs -r apt-mark manual ; \
+  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+  apt-get clean; \
+  apt-get autoclean; \
+  rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
+
+CMD ["bash"]
+
