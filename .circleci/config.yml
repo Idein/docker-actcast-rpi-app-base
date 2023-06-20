@@ -26,13 +26,18 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup docker
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker version
+            docker buildx create --use
+            docker buildx inspect --bootstrap
+            docker buildx ls
+      - run:
           name: Install make
           command: |
             sudo apt-get update
             sudo apt-get install make
-      - run:
-          name: Login docker hub
-          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
       - run:
           name: Enable usermode emulation
           command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
