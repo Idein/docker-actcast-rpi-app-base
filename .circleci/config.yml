@@ -49,8 +49,11 @@ jobs:
       - run:
           name: Release docker image
           command: |
-            if [ -n "${CIRCLE_TAG}" ]
+            if [[ "${CIRCLE_TAG}" =~ ^.*-python(-[0-9])*$  ]]; then
             then
+              docker tag idein/actcast-rpi-app-base-python:latest idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python//}
+              docker push idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python//}
+            else
               docker tag idein/actcast-rpi-app-base:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
               docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
             fi
