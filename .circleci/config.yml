@@ -52,7 +52,7 @@ jobs:
             if [ ! -n "${CIRCLE_TAG}" ]; then
               exit 0
             fi
-            if [[ "${CIRCLE_TAG}" =~ ^.*-python(-[0-9])*$  ]]; then
+            if [[ "${CIRCLE_TAG}" =~ ^.*-python(-[0-9])*$  ]]
             then
               docker tag idein/actcast-rpi-app-base-python:latest idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
               docker push idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
