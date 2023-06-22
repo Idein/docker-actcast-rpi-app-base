@@ -14,7 +14,7 @@ ENV PYTHON_GET_PIP_SHA256=96461deced5c2a487ddc65207ec5a9cffeca0d34e7af7ea1afc470
 RUN /bin/sh -c set -eux; \
   apt-get update; \
   apt-get install -y --no-install-recommends ca-certificates netbase tzdata libexpat1 libfreetype6 libjpeg62-turbo; \
-  $(apt-mark showmanual) > /savedAptMark ; \
+  apt-mark showmanual > /savedAptMark ; \
   apt-get install -y --no-install-recommends dpkg-dev gcc gnupg libbluetooth-dev libbz2-dev libc6-dev libdb-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev libjpeg-dev libfreetype6-dev ; \
   wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz"; \
   wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc"; \
