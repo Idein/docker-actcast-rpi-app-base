@@ -51,10 +51,22 @@ $ git push origin [codename]
 $ docker pull idein/actcast-rpi-app-base:[codename]
 ```
 
+バージョンコードネームに `-python` というサフィックスが付いている場合は，
+`idein/actcast-rpi-app-base-python:[codename]` がhubにアップロードされる．
+
+```console
+$ git tag [codename]-python
+$ git push origin [codename]-python
+(wait...)
+$ docker pull idein/actcast-rpi-app-base-python:[codename]
+```
+
 ## Patch Release
 
 同バージョンコードネームでもベースイメージにパッチを当てて(≒何らかの変更をして)リリースする必要が生じた場合，
 tag名を [codename]-1, [codename]-2, … としてリリースする．
+actcast-rpi-app-base-python にパッチを当てる場合は [codename]-python-1, [codename]-python-2, … とする．
+
 
 ## actdkが作成するアプリベースイメージの変更
 
