@@ -41,7 +41,7 @@ RUN /bin/sh -c set -eux; \
     make -j "$nproc" "EXTRA_CFLAGS=${EXTRA_CFLAGS:-}" "LDFLAGS=${LDFLAGS:-}" "PROFILE_TASK=${PROFILE_TASK:-}" ; \
     rm python; \
     make -j "$nproc" "EXTRA_CFLAGS=${EXTRA_CFLAGS:-}" "LDFLAGS=${LDFLAGS:--Wl},-rpath='\$\$ORIGIN/../lib'" "PROFILE_TASK=${PROFILE_TASK:-}" python ; \
-    make install; \
+    make commoninstall bininstall; \
   cd /; \
   rm -rf /usr/src/python; \
   for src in idle3 pydoc3 python3 python3-config; do \
