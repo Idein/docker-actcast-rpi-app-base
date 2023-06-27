@@ -62,6 +62,7 @@ RUN /bin/sh -c set -eux; \
   rm -rf /root/wheels; \
   find /usr/local -depth \( \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name 'libpython*.a' \) \) \) -exec rm -rf '{}' + ; \
   ldconfig; \
+  pip --version; \
   apt-mark auto '.*' > /dev/null; \
   apt-mark manual $(cat /savedAptMark); \
   rm /savedAptMark; \
