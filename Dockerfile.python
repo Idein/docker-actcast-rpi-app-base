@@ -17,7 +17,7 @@ RUN apt-get update \
  && apt-mark showmanual > /savedBaseAptMark \
  && apt-get install -y --no-install-recommends ca-certificates netbase tzdata libexpat1 libfreetype6 libjpeg62-turbo \
  && apt-mark showmanual > /savedAptMark \
- && apt-get install -y --no-install-recommends dpkg-dev gcc g++ gnupg libbluetooth-dev libbz2-dev libc6-dev libdb-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev libjpeg-dev libfreetype6-dev \
+ && apt-get install -y --no-install-recommends dpkg-dev gcc-8 g++ libbluetooth-dev libbz2-dev libc6-dev libdb-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev libjpeg-dev libfreetype6-dev \
  && wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
  && wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
  && wget -O get-pip.py "$PYTHON_GET_PIP_URL" \
@@ -66,8 +66,7 @@ RUN apt-get update \
  #&& rm /savedAptMark \
  && find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' > /find_ldd.log \
  && find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' | awk '/=>/ { print $(NF-1) }' | sort -u | xargs -r dpkg-query --search | cut -d: -f1 | sort -u | xargs -r apt-mark manual \
- && apt-get purge -y --auto-remove libgcc-8-dev \
- && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+ && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false libgcc-8-dev perl \
  && apt-get clean \
  && apt-get autoclean \
  && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
