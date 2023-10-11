@@ -30,6 +30,9 @@ chroot ${ROOTFS_DIR} usermod -aG video root
 # audio group required to use sound devices
 chroot ${ROOTFS_DIR} usermod -aG audio root
 
+# dialout group required to use usb serial devices
+chroot ${ROOTFS_DIR} usermod -aG dialout root
+
 # integrate https://github.com/Idein/docker-actcast-rpi-app-base/pull/3
 chroot ${ROOTFS_DIR} groupadd -f -g 997 gpio
 chroot ${ROOTFS_DIR} usermod -aG gpio root
