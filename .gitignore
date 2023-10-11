@@ -1,6 +1,6 @@
 /actcast-rpi-app-base.tar.gz
 /rootfs.tar.xz
-/actcast-rpi-app-base
+/actcast-rpi-app-base*
 /actcast-rpi-app-base-python
 /actcast-rpi-app-builder
 
