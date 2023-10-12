@@ -12,8 +12,6 @@ jobs:
   build:
     <<: *defaults
     parameters:
-      tag:
-        type: string
       firmware_type:
         type: string
     steps:
@@ -43,7 +41,43 @@ jobs:
       - run:
           name: Release docker image
           command: |
-            docker tag idein/actcast-rpi-app-base-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:<< parameters.tag >>
+            docker images
+            if [ ! -n "${CIRCLE_TAG}" ]; then
+              exit 0
+            else
+              docker tag idein/actcast-rpi-app-base-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
+              docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
+            fi
+  build_python:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Setup docker
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker version
+            docker buildx create --use
+            docker buildx inspect --bootstrap
+            docker buildx ls
+      - run:
+          name: Install make
+          command: |
+            sudo apt-get update
+            sudo apt-get install make
+      - run:
+          name: Enable usermode emulation
+          command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      - run:
+          name: Build docker image
+          command: |
+            make dist/actcast-rpi-app-base-python.tar.gz -j
+      - store_artifacts:
+          path: dist
+      - run:
+          name: Release docker image
+          command: |
+            docker images
             if [ ! -n "${CIRCLE_TAG}" ]; then
               exit 0
             fi
@@ -51,9 +85,6 @@ jobs:
             then
               docker tag idein/actcast-rpi-app-base-python:latest idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
               docker push idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
-            else
-              docker tag idein/actcast-rpi-app-base-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
-              docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
             fi
 
 workflows:
@@ -62,7 +93,6 @@ workflows:
      jobs:
       - build:
           firmware_type: buster
-          tag: buster-2
           context:
             - docker-hub-creds
           filters:
@@ -72,7 +102,14 @@ workflows:
               only: /.*/
       - build:
           firmware_type: bullseye
-          tag: bullseye-1
+          context:
+            - docker-hub-creds
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
+      - build_python:
           context:
             - docker-hub-creds
           filters:
