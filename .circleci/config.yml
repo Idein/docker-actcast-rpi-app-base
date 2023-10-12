@@ -7,15 +7,9 @@ references:
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
-
-jobs:
-  build:
-    <<: *defaults
-    parameters:
-      firmware_type:
-        type: string
+commands:
+  setup:
     steps:
-      - checkout
       - run:
           name: Setup docker
           command: |
@@ -32,6 +26,16 @@ jobs:
       - run:
           name: Enable usermode emulation
           command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+jobs:
+  build:
+    <<: *defaults
+    parameters:
+      firmware_type:
+        type: string
+    steps:
+      - checkout
+      - setup
       - run:
           name: Build docker image
           command: |
@@ -52,22 +56,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          name: Setup docker
-          command: |
-            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-            docker version
-            docker buildx create --use
-            docker buildx inspect --bootstrap
-            docker buildx ls
-      - run:
-          name: Install make
-          command: |
-            sudo apt-get update
-            sudo apt-get install make
-      - run:
-          name: Enable usermode emulation
-          command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      - setup
       - run:
           name: Build docker image
           command: |
