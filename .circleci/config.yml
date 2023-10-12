@@ -99,7 +99,7 @@ workflows:
             branches:
               only: /.*/
             tags:
-              only: /.*/
+              only: /^buster-[0-9]+$/
       - build:
           firmware_type: bullseye
           context:
@@ -108,7 +108,7 @@ workflows:
             branches:
               only: /.*/
             tags:
-              only: /.*/
+              only: /^bullseye-[0-9]+/
       - build_python:
           context:
             - docker-hub-creds
@@ -116,4 +116,4 @@ workflows:
             branches:
               only: /.*/
             tags:
-              only: /.*/
+              only: /^buster-python-[0-9]+$/
