@@ -44,7 +44,7 @@ Raspberry Pi OS のアップグレードに応じて新たなバージョンの�
 ```console
 $ git grep [codename]
 Dockerfile.builder:FROM debian:[codename]
-builder:readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-[codename]}
+builder:readonly RASPBIAN_VERSION=${RASPBIAN_VERSION:-[codename]}
 ```
 
 ## Release
