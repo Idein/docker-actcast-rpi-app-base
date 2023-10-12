@@ -13,7 +13,7 @@ actcast-rpi-app-builder: Dockerfile.builder builder
 rootfs_$(FIRMWARE_TYPE).tar.xz: actcast-rpi-app-builder
 	-docker stop actcast-rpi-app-builder
 	@sleep 5
-	docker run -d --rm -it --privileged --name=actcast-rpi-app-builder -e RAPBIAN_VERSION=$(FIRMWARE_TYPE) idein/actcast-rpi-app-builder /bin/bash
+	docker run -d --rm -it --privileged --name=actcast-rpi-app-builder -e RASPBIAN_VERSION=$(FIRMWARE_TYPE) idein/actcast-rpi-app-builder /bin/bash
 	docker exec actcast-rpi-app-builder ./builder
 	docker cp actcast-rpi-app-builder:/root/rootfs.tar.xz $@
 	-docker stop actcast-rpi-app-builder
