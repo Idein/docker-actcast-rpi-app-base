@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 references:
   defaults: &defaults
@@ -7,24 +7,9 @@ references:
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
-workflows:
-  version: 2
-  build_and_deploy:
-    jobs:
-      - build:
-          context:
-            - docker-hub-creds
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              only: /.*/
-
-jobs:
-  build:
-    <<: *defaults
+commands:
+  setup:
     steps:
-      - checkout
       - run:
           name: Setup docker
           command: |
@@ -41,22 +26,83 @@ jobs:
       - run:
           name: Enable usermode emulation
           command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+jobs:
+  build:
+    <<: *defaults
+    parameters:
+      firmware_type:
+        type: string
+    steps:
+      - checkout
+      - setup
       - run:
           name: Build docker image
-          command: make dist -j
+          command: |
+            make FIRMWARE_TYPE=<< parameters.firmware_type >> dist/actcast-rpi-app-base-<< parameters.firmware_type >>.tar.gz -j
       - store_artifacts:
           path: dist
       - run:
           name: Release docker image
           command: |
+            docker images
             if [ ! -n "${CIRCLE_TAG}" ]; then
               exit 0
-            fi
-            if [[ "${CIRCLE_TAG}" =~ ^.*-python(-[0-9])*$  ]]
-            then
-              docker tag idein/actcast-rpi-app-base-python:latest idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
-              docker push idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
             else
-              docker tag idein/actcast-rpi-app-base:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
+              docker tag idein/actcast-rpi-app-base-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
               docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
             fi
+  build_python:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup
+      - run:
+          name: Build docker image
+          command: |
+            make dist/actcast-rpi-app-base-python.tar.gz -j
+      - store_artifacts:
+          path: dist
+      - run:
+          name: Release docker image
+          command: |
+            docker images
+            if [ ! -n "${CIRCLE_TAG}" ]; then
+              exit 0
+            else
+              docker tag idein/actcast-rpi-app-base-python:latest idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
+              docker push idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
+            fi
+
+workflows:
+  version: 2
+  build_and_deploy:
+     jobs:
+      - build:
+          name: build_buster
+          firmware_type: buster
+          context:
+            - docker-hub-creds
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /^buster-[0-9]+$/
+      - build:
+          name: build_bullseye
+          firmware_type: bullseye
+          context:
+            - docker-hub-creds
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /^bullseye-[0-9]+/
+      - build_python:
+          context:
+            - docker-hub-creds
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /^buster-python-[0-9]+$/

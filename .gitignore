@@ -1,6 +1,9 @@
 /actcast-rpi-app-base.tar.gz
 /rootfs.tar.xz
-/actcast-rpi-app-base
+/rootfs_buster.tar.xz
+/rootfs_bullseye.tar.xz
+/actcast-rpi-app-base-buster
+/actcast-rpi-app-base-bullseye
 /actcast-rpi-app-base-python
 /actcast-rpi-app-builder
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xue
 
-readonly RASPBIAN_VERSION=${RAPBIAN_VERSION:-bullseye}
+readonly RASPBIAN_VERSION=${RASPBIAN_VERSION:-bullseye}
 readonly RASPBIAN_MIRROR=${RASPBIAN_MIRROR:-'http://archive.raspbian.org/raspbian'}
 readonly TMP_DIR=$(mktemp -d /tmp/docker-builder.XXXXXXXXXX)
 readonly ROOTFS_DIR=$TMP_DIR/rootfs
@@ -29,6 +29,9 @@ chroot ${ROOTFS_DIR} usermod -aG video root
 
 # audio group required to use sound devices
 chroot ${ROOTFS_DIR} usermod -aG audio root
+
+# dialout group required to use usb serial devices
+chroot ${ROOTFS_DIR} usermod -aG dialout root
 
 # integrate https://github.com/Idein/docker-actcast-rpi-app-base/pull/3
 chroot ${ROOTFS_DIR} groupadd -f -g 997 gpio
