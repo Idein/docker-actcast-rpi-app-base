@@ -59,6 +59,7 @@ jobs:
       - setup
       - run:
           name: Build docker image
+          no_output_timeout: 60m
           command: |
             make dist/actcast-rpi-app-base-python.tar.gz -j
       - store_artifacts:
