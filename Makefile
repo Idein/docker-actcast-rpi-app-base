@@ -19,7 +19,7 @@ rootfs_$(FIRMWARE_TYPE).tar.xz: actcast-rpi-app-builder
 	-docker stop actcast-rpi-app-builder
 
 actcast-rpi-app-base-python: Dockerfile.python
-	docker buildx build -f $< -t idein/$@ --load .
+	docker build -f $< -t idein/$@ .
 	touch $@
 
 actcast-rpi-app-base-$(FIRMWARE_TYPE): Dockerfile.base rootfs_$(FIRMWARE_TYPE).tar.xz
