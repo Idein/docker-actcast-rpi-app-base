@@ -3,7 +3,7 @@ version: 2.1
 references:
   defaults: &defaults
     machine:
-      image: ubuntu-2204:2024.05.1
+      image: default
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
