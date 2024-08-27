@@ -3,7 +3,7 @@ version: 2.1
 references:
   defaults: &defaults
     machine:
-      image: ubuntu-2204:2022.04.2
+      image: default
     environment:
       TZ: "/usr/share/zoneinfo/Asia/Tokyo"
 
@@ -78,7 +78,7 @@ jobs:
 workflows:
   version: 2
   build_and_deploy:
-     jobs:
+    jobs:
       - build:
           name: build_buster
           firmware_type: buster
