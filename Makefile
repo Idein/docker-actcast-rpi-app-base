@@ -24,7 +24,7 @@ actcast-rpi-app-base-python: Dockerfile.python
 
 actcast-rpi-app-base-$(FIRMWARE_TYPE): Dockerfile.base rootfs_$(FIRMWARE_TYPE).tar.xz
 	cp rootfs_$(FIRMWARE_TYPE).tar.xz rootfs.tar.xz
-	docker build -f $< -t idein/$@ .
+	docker build --platform=linux/arm/v7 -f $< -t idein/$@ .
 	touch $@
 
 dist/actcast-rpi-app-base-$(FIRMWARE_TYPE).tar.gz dist/actcast-rpi-app-base-python.tar.gz: dist/%.tar.gz: %
