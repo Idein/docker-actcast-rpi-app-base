@@ -7,9 +7,6 @@ Actcast アプリケーションとして作成されるDockerイメージを作
 `idein/actcast-rpi-app-base`
 : RaspberryPi用アプリ作成のための最低限の設定をしたイメージ
 
-`idein/actcast-rpi-app-base-python`
-: RaspberryPi用アプリ作成に必要な最低限の環境にpythonとnumpyとpillowを追加したイメージ
-
 ## Build
 
 dockerをインストールしてmultiarch対応させた上で，
@@ -18,13 +15,12 @@ dockerをインストールしてmultiarch対応させた上で，
 $ make
 ```
 
-すると，`idein/actcast-rpi-app-base-bullseye` イメージと `idein/actcast-rpi-app-base-python` イメージが作成される．
+すると，`idein/actcast-rpi-app-base-bullseye` イメージが作成される．
 
 ```console
 $ docker images
 REPOSITORY                          TAG        IMAGE ID       CREATED          SIZE
 idein/actcast-rpi-app-base-bullseye latest     4413af65372d   57 minutes ago   87.5MB
-idein/actcast-rpi-app-base-python   latest     b5cd2eca6a3a   19 minutes ago   189MB
 ```
 
 buster版をビルドしたい場合は、
@@ -59,21 +55,10 @@ $ git push origin [codename]
 $ docker pull idein/actcast-rpi-app-base:[codename]
 ```
 
-バージョンコードネームに `-python` というサフィックスが付いている場合は，
-`idein/actcast-rpi-app-base-python:[codename]` がhubにアップロードされる．
-
-```console
-$ git tag [codename]-python
-$ git push origin [codename]-python
-(wait...)
-$ docker pull idein/actcast-rpi-app-base-python:[codename]
-```
-
 ## Patch Release
 
 同バージョンコードネームでもベースイメージにパッチを当てて(≒何らかの変更をして)リリースする必要が生じた場合，
 tag名を [codename]-1, [codename]-2, … としてリリースする．
-actcast-rpi-app-base-python にパッチを当てる場合は [codename]-python-1, [codename]-python-2, … とする．
 
 
 ## actdkが作成するアプリベースイメージの変更
