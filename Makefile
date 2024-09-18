@@ -1,10 +1,10 @@
 FIRMWARE_TYPE = bullseye
 
 .PHONY: all
-all: actcast-rpi-app-base-python actcast-rpi-app-base-$(FIRMWARE_TYPE)
+all: actcast-rpi-app-base-$(FIRMWARE_TYPE)
 
 .PHONY: dist
-dist: dist/actcast-rpi-app-base-$(FIRMWARE_TYPE).tar.gz dist/actcast-rpi-app-base-python.tar.gz
+dist: dist/actcast-rpi-app-base-$(FIRMWARE_TYPE).tar.gz
 
 actcast-rpi-app-builder: Dockerfile.builder builder
 	docker build -f $< -t idein/$@ .
@@ -18,21 +18,17 @@ rootfs_$(FIRMWARE_TYPE).tar.xz: actcast-rpi-app-builder
 	docker cp actcast-rpi-app-builder:/root/rootfs.tar.xz $@
 	-docker stop actcast-rpi-app-builder
 
-actcast-rpi-app-base-python: Dockerfile.python
-	docker build -f $< -t idein/$@ .
-	touch $@
-
 actcast-rpi-app-base-$(FIRMWARE_TYPE): Dockerfile.base rootfs_$(FIRMWARE_TYPE).tar.xz
 	cp rootfs_$(FIRMWARE_TYPE).tar.xz rootfs.tar.xz
 	docker build --platform=linux/arm/v7 -f $< -t idein/$@ .
 	touch $@
 
-dist/actcast-rpi-app-base-$(FIRMWARE_TYPE).tar.gz dist/actcast-rpi-app-base-python.tar.gz: dist/%.tar.gz: %
+dist/actcast-rpi-app-base-$(FIRMWARE_TYPE).tar.gz: dist/%.tar.gz: %
 	mkdir -p $(dir $@)
 	docker save idein/$< | gzip > $@
 
 .PHONY: clean
-clean: clean-actcast-rpi-app-builder clean-actcast-rpi-app-base-$(FIRMWARE_TYPE) clean-actcast-rpi-app-base-python
+clean: clean-actcast-rpi-app-builder clean-actcast-rpi-app-base-$(FIRMWARE_TYPE)
 	-$(RM) rootfs.tar.xz
 	-$(RM) -r dist
 
@@ -46,8 +42,4 @@ clean-actcast-rpi-app-base-$(FIRMWARE_TYPE):
 	-$(RM) actcast-rpi-app-base-$(FIRMWARE_TYPE)
 	-docker rmi idein/actcast-rpi-app-base-$(FIRMWARE_TYPE)
 
-.PHONY: clean-actcast-rpi-app-base-python
-clean-actcast-rpi-app-base-python:
-	-$(RM) actcast-rpi-app-base-python
-	-docker rmi idein/actcast-rpi-app-base-python
 

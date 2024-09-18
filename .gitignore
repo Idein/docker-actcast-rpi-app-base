@@ -4,7 +4,6 @@
 /rootfs_bullseye.tar.xz
 /actcast-rpi-app-base-buster
 /actcast-rpi-app-base-bullseye
-/actcast-rpi-app-base-python
 /actcast-rpi-app-builder
 
 # Created by https://www.gitignore.io/api/vim,osx,linux,emacs,windows

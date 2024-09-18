@@ -52,28 +52,6 @@ jobs:
               docker tag idein/actcast-rpi-app-base-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
               docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
             fi
-  build_python:
-    <<: *defaults
-    steps:
-      - checkout
-      - setup
-      - run:
-          name: Build docker image
-          no_output_timeout: 60m
-          command: |
-            make dist/actcast-rpi-app-base-python.tar.gz -j
-      - store_artifacts:
-          path: dist
-      - run:
-          name: Release docker image
-          command: |
-            docker images
-            if [ ! -n "${CIRCLE_TAG}" ]; then
-              exit 0
-            else
-              docker tag idein/actcast-rpi-app-base-python:latest idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
-              docker push idein/actcast-rpi-app-base-python:${CIRCLE_TAG/-python/}
-            fi
 
 workflows:
   version: 2
@@ -99,11 +77,3 @@ workflows:
               only: /.*/
             tags:
               only: /^bullseye-[0-9]+/
-      - build_python:
-          context:
-            - docker-hub-creds
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              only: /^buster-python-[0-9]+$/
