@@ -43,10 +43,10 @@ RUN groupadd -f -g 20 dialout \
 
 # ----- 111MB -----
 
-# # . libcameraインストール
-# RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-#   --mount=type=cache,target=/var/lib/apt,sharing=locked \
-#   apt update && apt install --no-install-recommends -y python3-libcamera
+# . libdrm2とlibcameraのインストール
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  apt update && apt install --no-install-recommends -y libdrm2 python3-libcamera
 
 # ----- 208MB -----
 
