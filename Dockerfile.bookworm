@@ -1,0 +1,55 @@
+# syntax=docker/dockerfile:1
+FROM debian:bookworm-slim
+
+ENV LC_ALL=C.UTF-8
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN <<EOC cat > /etc/ld.so.conf.d/vc.conf && ldconfig
+/opt/vc/lib
+EOC
+
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
+  echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  apt update && apt upgrade -y && apt install --no-install-recommends -y wget gnupg ca-certificates
+
+# . raspiのリポジトリ追加
+RUN <<EOC cat > /etc/apt/sources.list.d/raspi.sources
+Types: deb
+# Types: deb deb-src
+URIs: http://archive.raspberrypi.com/debian/
+Suites: bookworm
+Components: main
+Signed-By: /usr/share/keyrings/raspberrypi-archive-keyring.gpg
+EOC
+
+RUN wget -qO - https://archive.raspberrypi.com/debian/raspberrypi.gpg.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-archive-keyring.gpg
+
+# . (opt) ユーザの設定
+RUN groupadd -f -g 20 dialout \
+ && usermod -aG dialout root \
+ && groupadd -f -g 29 audio \
+ && usermod -aG audio root \
+ && groupadd -f -g 44 video \
+ && usermod -aG video root \
+ && groupadd -f -g 997 gpio \
+ && usermod -aG gpio root \
+ && groupadd -f -g 998 i2c \
+ && usermod -aG i2c root \
+ && groupadd -f -g 999 spi \
+ && usermod -aG spi root
+
+# ----- 118MB -----
+
+# # . libcameraインストール
+# RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+#   --mount=type=cache,target=/var/lib/apt,sharing=locked \
+#   apt update && apt install --no-install-recommends -y python3-libcamera
+
+# ----- 213MB -----
+
+WORKDIR /root
+STOPSIGNAL SIGTERM
+CMD ["/bin/bash"]
