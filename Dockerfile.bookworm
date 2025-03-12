@@ -13,7 +13,7 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
   echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  apt update && apt upgrade -y && apt install --no-install-recommends -y wget gnupg ca-certificates
+  apt update && apt upgrade -y && apt install --no-install-recommends -y wget gpg ca-certificates
 
 # . raspiのリポジトリ追加
 RUN <<EOC cat > /etc/apt/sources.list.d/raspi.sources
@@ -41,14 +41,14 @@ RUN groupadd -f -g 20 dialout \
  && groupadd -f -g 999 spi \
  && usermod -aG spi root
 
-# ----- 118MB -----
+# ----- 111MB -----
 
 # # . libcameraインストール
 # RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 #   --mount=type=cache,target=/var/lib/apt,sharing=locked \
 #   apt update && apt install --no-install-recommends -y python3-libcamera
 
-# ----- 213MB -----
+# ----- 208MB -----
 
 WORKDIR /root
 STOPSIGNAL SIGTERM
