@@ -24,7 +24,7 @@ actcast-rpi-app-base-bullseye actcast-rpi-app-base-buster: Dockerfile.base rootf
 	touch $@
 
 actcast-rpi-app-base-bookworm: Dockerfile.bookworm
-	docker buildx build --platform=linux/arm64 -f $< -t idein/$@ .
+	docker buildx build --platform=linux/arm64 -f $< -t idein/$@ --load .
 	touch $@
 
 dist/actcast-rpi-app-base-$(FIRMWARE_TYPE).tar.gz: dist/%.tar.gz: %
