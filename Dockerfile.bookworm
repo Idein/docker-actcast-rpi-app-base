@@ -15,7 +15,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
   apt update && apt upgrade -y && apt install --no-install-recommends -y wget gpg ca-certificates
 
-# . raspiのリポジトリ追加
 RUN <<EOC cat > /etc/apt/sources.list.d/raspi.sources
 Types: deb
 # Types: deb deb-src
@@ -27,7 +26,6 @@ EOC
 
 RUN wget -qO - https://archive.raspberrypi.com/debian/raspberrypi.gpg.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-archive-keyring.gpg
 
-# . (opt) ユーザの設定
 RUN groupadd -f -g 20 dialout \
  && usermod -aG dialout root \
  && groupadd -f -g 29 audio \
@@ -41,14 +39,9 @@ RUN groupadd -f -g 20 dialout \
  && groupadd -f -g 999 spi \
  && usermod -aG spi root
 
-# ----- 111MB -----
-
-# . libdrm2とlibcameraのインストール
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
   apt update && apt install --no-install-recommends -y libdrm2 python3-libcamera
-
-# ----- 208MB -----
 
 WORKDIR /root
 STOPSIGNAL SIGTERM
