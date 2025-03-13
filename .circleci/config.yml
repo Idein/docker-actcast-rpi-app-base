@@ -77,3 +77,13 @@ workflows:
               only: /.*/
             tags:
               only: /^bullseye-[0-9]+/
+      - build:
+          name: build_bookworm
+          firmware_type: bookworm
+          context:
+            - docker-hub-creds
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /^bookworm-[0-9]+/
