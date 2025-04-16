@@ -27,21 +27,21 @@ EOC
 RUN wget -qO - https://archive.raspberrypi.com/debian/raspberrypi.gpg.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-archive-keyring.gpg
 
 RUN groupadd -f -g 20 dialout \
- && usermod -aG dialout root \
- && groupadd -f -g 29 audio \
- && usermod -aG audio root \
- && groupadd -f -g 44 video \
- && usermod -aG video root \
- && groupadd -f -g 997 gpio \
- && usermod -aG gpio root \
- && groupadd -f -g 998 i2c \
- && usermod -aG i2c root \
- && groupadd -f -g 999 spi \
- && usermod -aG spi root
+  && usermod -aG dialout root \
+  && groupadd -f -g 29 audio \
+  && usermod -aG audio root \
+  && groupadd -f -g 44 video \
+  && usermod -aG video root \
+  && groupadd -f -g 997 gpio \
+  && usermod -aG gpio root \
+  && groupadd -f -g 998 i2c \
+  && usermod -aG i2c root \
+  && groupadd -f -g 999 spi \
+  && usermod -aG spi root
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  apt update && apt install --no-install-recommends -y libdrm2 python3-libcamera
+  apt update && apt install --no-install-recommends -y libdrm2 python3-libcamera libatomic1
 
 WORKDIR /root
 STOPSIGNAL SIGTERM
