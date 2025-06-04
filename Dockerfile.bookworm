@@ -41,7 +41,7 @@ RUN groupadd -f -g 20 dialout \
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  apt update && apt install --no-install-recommends -y libdrm2 python3-libcamera libatomic1
+  apt update && apt install --no-install-recommends -y libdrm2 libatomic1
 
 WORKDIR /root
 STOPSIGNAL SIGTERM
