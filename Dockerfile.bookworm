@@ -32,11 +32,11 @@ RUN groupadd -f -g 20 dialout \
   && usermod -aG audio root \
   && groupadd -f -g 44 video \
   && usermod -aG video root \
-  && groupadd -f -g 997 gpio \
+  && groupadd -f -g 993 gpio \
   && usermod -aG gpio root \
-  && groupadd -f -g 998 i2c \
+  && groupadd -f -g 994 i2c \
   && usermod -aG i2c root \
-  && groupadd -f -g 999 spi \
+  && groupadd -f -g 995 spi \
   && usermod -aG spi root
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
