@@ -9,11 +9,30 @@ RUN <<EOC cat > /etc/ld.so.conf.d/vc.conf && ldconfig
 /opt/vc/lib
 EOC
 
-RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
-  echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-  --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  apt update && apt upgrade -y && apt install --no-install-recommends -y wget gpg ca-certificates
+
+RUN <<EOC cat > /etc/apt/apt.conf.d/01_buildconfig
+APT::Get::Assume-Yes "true";
+APT::Install-Recommends "0";
+APT::Install-Suggests "0";
+quiet "true";
+EOC
+
+
+RUN <<EOC cat > /etc/apt/apt.conf.d/02_nocache
+Dir::Cache {
+  srcpkgcache "";
+  pkgcache "";
+};
+EOC
+
+RUN rm -f /etc/apt/apt.conf.d/01autoremove \
+   && apt update \
+   && apt full-upgrade -y \
+   && apt install --no-install-recommends -y wget gpg ca-certificates \
+   && apt clean \
+   && apt autoclean \
+   && apt autoremove -y \
+   && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
 RUN <<EOC cat > /etc/apt/sources.list.d/raspi.sources
 Types: deb
@@ -39,9 +58,11 @@ RUN groupadd -f -g 20 dialout \
   && groupadd -f -g 995 spi \
   && usermod -aG spi root
 
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-  --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  apt update && apt install --no-install-recommends -y libdrm2 libatomic1
+RUN apt update && apt install --no-install-recommends -y libdrm2 libatomic1 \
+ && apt clean \
+ && apt autoclean \
+ && apt autoremove -y \
+ && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
 WORKDIR /root
 STOPSIGNAL SIGTERM
