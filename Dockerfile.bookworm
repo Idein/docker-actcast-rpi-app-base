@@ -51,6 +51,8 @@ RUN groupadd -f -g 20 dialout \
   && usermod -aG audio root \
   && groupadd -f -g 44 video \
   && usermod -aG video root \
+  && groupadd -f -g 102 input \
+  && usermod -aG input root \
   && groupadd -f -g 993 gpio \
   && usermod -aG gpio root \
   && groupadd -f -g 994 i2c \
