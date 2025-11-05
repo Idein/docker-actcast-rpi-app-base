@@ -75,13 +75,13 @@ EOF
 
 # set apt source
 cat > "${ROOTFS_DIR}/etc/apt/sources.list" <<EOF
-deb http://archive.raspbian.org/raspbian ${RASPBIAN_VERSION} main firmware
+deb https://archive.raspbian.org/raspbian ${RASPBIAN_VERSION} main firmware
 EOF
 
 chroot ${ROOTFS_DIR} bash -c 'apt-get update && apt-get dist-upgrade -y && apt-get install -y libdrm2'
 rm -rf ${ROOTFS_DIR}/var/lib/apt/lists/*
 cat > "${ROOTFS_DIR}/etc/apt/sources.list.d/raspi.list" <<EOF
-deb http://archive.raspberrypi.org/debian ${RASPBIAN_VERSION} main
+deb https://archive.raspberrypi.org/debian ${RASPBIAN_VERSION} main
 EOF
 
 rm -rf "${ROOTFS_DIR}/dev" "${ROOTFS_DIR}/proc"

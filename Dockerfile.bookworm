@@ -34,10 +34,12 @@ RUN rm -f /etc/apt/apt.conf.d/01autoremove \
    && apt autoremove -y \
    && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
+RUN sed -i -e 's|^\(URIs:\s*\)http://|\1https://|' /etc/apt/sources.list.d/debian.sources
+
 RUN <<EOC cat > /etc/apt/sources.list.d/raspi.sources
 Types: deb
 # Types: deb deb-src
-URIs: http://archive.raspberrypi.com/debian/
+URIs: https://archive.raspberrypi.com/debian/
 Suites: bookworm
 Components: main
 Signed-By: /usr/share/keyrings/raspberrypi-archive-keyring.gpg
