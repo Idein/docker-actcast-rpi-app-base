@@ -4,10 +4,7 @@ FROM debian:bookworm-slim
 ENV LC_ALL=C.UTF-8
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV DEBIAN_FRONTEND=noninteractive
-
-RUN <<EOC cat > /etc/ld.so.conf.d/vc.conf && ldconfig
-/opt/vc/lib
-EOC
+ENV LD_LIBRARY_PATH=/opt/vc/lib
 
 
 RUN <<EOC cat > /etc/apt/apt.conf.d/01_buildconfig
