@@ -57,7 +57,8 @@ RUN groupadd -f -g 20 dialout \
   && groupadd -f -g 994 i2c \
   && usermod -aG i2c root \
   && groupadd -f -g 995 spi \
-  && usermod -aG spi root
+  && usermod -aG spi root \
+  && usermod -aG sudo root
 
 RUN apt update && apt install --no-install-recommends -y libdrm2 libatomic1 \
  && apt clean \
