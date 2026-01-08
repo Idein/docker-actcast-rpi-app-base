@@ -23,14 +23,6 @@ REPOSITORY                          TAG        IMAGE ID       CREATED          S
 idein/actcast-rpi-app-base-bullseye latest     4413af65372d   57 minutes ago   87.5MB
 ```
 
-buster版をビルドしたい場合は、
-
-```console
-$ make FIRMWARE_TYPE=buster actcast-rpi-app-base-buster
-```
-
-とする。
-
 
 ## Upgrade
 
