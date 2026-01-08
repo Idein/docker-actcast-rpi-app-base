@@ -18,7 +18,7 @@ rootfs_$(FIRMWARE_TYPE).tar.xz: actcast-rpi-app-builder
 	docker cp actcast-rpi-app-builder:/root/rootfs.tar.xz $@
 	-docker stop actcast-rpi-app-builder
 
-actcast-rpi-app-base-bullseye actcast-rpi-app-base-buster: Dockerfile.base rootfs_$(FIRMWARE_TYPE).tar.xz
+actcast-rpi-app-base-bullseye: Dockerfile.base rootfs_$(FIRMWARE_TYPE).tar.xz
 	cp rootfs_$(FIRMWARE_TYPE).tar.xz rootfs.tar.xz
 	docker build --platform=linux/arm/v7 -f $< -t idein/$@ .
 	touch $@

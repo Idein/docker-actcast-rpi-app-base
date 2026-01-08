@@ -58,16 +58,6 @@ workflows:
   build_and_deploy:
     jobs:
       - build:
-          name: build_buster
-          firmware_type: buster
-          context:
-            - docker-hub-creds
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              only: /^buster-[0-9]+$/
-      - build:
           name: build_bullseye
           firmware_type: bullseye
           context:
