@@ -118,6 +118,7 @@ COPY gui-bookworm/rc.xml /etc/xdg/openbox/rc.xml
 ENV LANG=ja_JP.UTF-8
 ENV LC_ALL=ja_JP.UTF-8
 ENV KEYLAYOUT=jp
+ENV KEYMODEL=jp106
 
 ENV DISPLAY=:0
 ENV VT=7

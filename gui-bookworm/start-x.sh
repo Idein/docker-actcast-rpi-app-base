@@ -2,6 +2,17 @@
 set -x
 exec 1>&2
 
+# キーボードを抜き差ししても設定した配列で認識されるようにする
+# アプリの実装で KEYLAYOUT, KEYMODEL を上書きできるようにここで動的に設定ファイルを作る
+cat <<CFG > /etc/X11/xorg.conf.d/00-keyboard.conf
+Section "InputClass"
+    Identifier "system-keyboard"
+    MatchIsKeyboard "on"
+    Option "XkbLayout" "${KEYLAYOUT}"
+    Option "XkbModel"  "${KEYMODEL}"
+EndSection
+CFG
+
 DISPLAY="${DISPLAY:-:0}"
 VT="${VT:-7}"
 
@@ -58,8 +69,6 @@ exec setpriv --reuid="$uid" --regid="$gid" --init-groups \
     chmod 700 "${XDG_RUNTIME_DIR}"
 
     fcitx5 -d --replace
-
-    setxkbmap -layout ${KEYLAYOUT}
 
     openbox &
     exec "$@"
