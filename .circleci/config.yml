@@ -52,6 +52,33 @@ jobs:
               docker tag idein/actcast-rpi-app-base-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
               docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
             fi
+  build_with_gui:
+    <<: *defaults
+    parameters:
+      firmware_type:
+        type: string
+    steps:
+      - checkout
+      - setup
+      - run:
+          name: Build docker image
+          command: |
+            make FIRMWARE_TYPE=<< parameters.firmware_type >> dist/actcast-rpi-app-base-<< parameters.firmware_type >>.tar.gz -j
+            make FIRMWARE_TYPE=gui-<< parameters.firmware_type >> dist/actcast-rpi-app-base-gui-<< parameters.firmware_type >>.tar.gz -j
+      - store_artifacts:
+          path: dist
+      - run:
+          name: Release docker image
+          command: |
+            docker images
+            if [ ! -n "${CIRCLE_TAG}" ]; then
+              exit 0
+            else
+              docker tag idein/actcast-rpi-app-base-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:$CIRCLE_TAG
+              docker tag idein/actcast-rpi-app-base-gui-<< parameters.firmware_type >>:latest idein/actcast-rpi-app-base:gui-$CIRCLE_TAG
+              docker push idein/actcast-rpi-app-base:$CIRCLE_TAG
+              docker push idein/actcast-rpi-app-base:gui-$CIRCLE_TAG
+            fi
 
 workflows:
   version: 2
@@ -67,7 +94,7 @@ workflows:
               only: /.*/
             tags:
               only: /^bullseye-[0-9]+/
-      - build:
+      - build_with_gui:
           name: build_bookworm
           firmware_type: bookworm
           context:
