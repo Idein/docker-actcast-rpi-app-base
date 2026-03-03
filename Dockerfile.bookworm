@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim AS base
 
 ENV LC_ALL=C.UTF-8
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -52,6 +52,8 @@ RUN groupadd -f -g 20 dialout \
   && usermod -aG video root \
   && groupadd -f -g 102 input \
   && usermod -aG input root \
+  && groupadd -f -g 105 render \
+  && usermod -aG render root \
   && groupadd -f -g 993 gpio \
   && usermod -aG gpio root \
   && groupadd -f -g 994 i2c \
@@ -69,3 +71,53 @@ RUN apt update && apt install --no-install-recommends -y libdrm2 libatomic1 \
 WORKDIR /root
 STOPSIGNAL SIGTERM
 CMD ["/bin/bash"]
+
+FROM base AS gui
+
+RUN apt update && apt install --no-install-recommends -y \
+    xserver-xorg-core \
+    xserver-xorg-input-libinput \
+    x11-xserver-utils \
+    x11-utils \
+    xinit \
+    openbox \
+    dbus \
+    dbus-x11 \
+    mesa-utils \
+    libgl1-mesa-dri \
+    libgl1-mesa-glx \
+    kmod \
+    kbd \
+    menu \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    locales \
+    fcitx5 \
+    fcitx5-mozc \
+    fcitx5-frontend-gtk3 \
+ && apt clean \
+ && apt autoclean \
+ && apt autoremove -y \
+ && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
+
+RUN sed -i 's/# ja_JP.UTF-8 UTF-8/ja_JP.UTF-8 UTF-8/' /etc/locale.gen \
+ && locale-gen
+
+RUN useradd -m idein \
+ && usermod -aG render idein
+
+RUN mkdir -p /etc/X11/xorg.conf.d
+COPY gui-bookworm/20-modesetting.conf /etc/X11/xorg.conf.d/20-modesetting.conf
+
+COPY gui-bookworm/start-x.sh /usr/local/bin/start-x.sh
+RUN chmod +x /usr/local/bin/start-x.sh
+
+COPY gui-bookworm/actcast.sh /etc/profile.d/actcast.sh
+COPY gui-bookworm/rc.xml /etc/xdg/openbox/rc.xml
+
+ENV LANG=ja_JP.UTF-8
+ENV LC_ALL=ja_JP.UTF-8
+ENV KEYLAYOUT=jp
+
+ENV DISPLAY=:0
+ENV VT=7
