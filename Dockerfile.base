@@ -8,8 +8,8 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV LD_LIBRARY_PATH=/opt/vc/lib:${LD_LIBRARY_PATH}
 ENV DEBIAN_FRONTEND=noninteractive
 
-# update ca certificates
-RUN update-ca-certificates --fresh
+COPY block-emudhra-ca.sh /usr/local/sbin/block-emudhra-ca
+RUN sh /usr/local/sbin/block-emudhra-ca
 
 WORKDIR /root
 STOPSIGNAL SIGTERM
