@@ -1,4 +1,6 @@
-FROM debian:bullseye
+# The build tools need not use the same release as the target rootfs.
+# RASPBIAN_VERSION in builder still selects bullseye for the Act image.
+FROM debian:bookworm
 LABEL maintainer "notogawa <n.ohkawa@idein.jp>"
 
 RUN apt-get update \

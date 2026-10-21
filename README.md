@@ -27,11 +27,13 @@ idein/actcast-rpi-app-base-bullseye latest     4413af65372d   57 minutes ago   8
 ## Upgrade
 
 Raspberry Pi OS のアップグレードに応じて新たなバージョンのベースイメージを作成する場合，
-リポジトリ内のバージョンコードネーム(stretch, buster等)を新しいコードネームに置換する．
+`builder` の `RASPBIAN_VERSION` と `Makefile` のターゲットなどを更新する．
+`Dockerfile.builder` はdebootstrapやQEMUを提供するビルド環境であり，
+生成するrootfsと同じDebianバージョンである必要はない．
+ビルド環境にはbookwormを使用し，bullseyeのrootfsは引き続き `RASPBIAN_VERSION=bullseye` で生成する．
 
 ```console
 $ git grep [codename]
-Dockerfile.builder:FROM debian:[codename]
 builder:readonly RASPBIAN_VERSION=${RASPBIAN_VERSION:-[codename]}
 ```
 
