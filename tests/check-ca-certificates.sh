@@ -1,6 +1,12 @@
 #!/bin/sh
 set -eu
 
+# OpenSSL 3 also loads a default CAstore; OpenSSL 1.1.1 has no such option.
+no_castore=
+if openssl verify -help 2>&1 | grep -q -- '-no-CAstore'; then
+    no_castore=-no-CAstore
+fi
+
 test_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 result=$(mktemp)
 trap 'rm -f "$result"' EXIT HUP INT TERM
@@ -22,7 +28,7 @@ for certificate in "$test_dir"/certificates/*.crt "$test_dir"/certificates/cross
         else
             set -- -no-CAfile -CApath /etc/ssl/certs
         fi
-        if openssl verify "$@" "$certificate" > "$result" 2>&1; then
+        if openssl verify ${no_castore:+"$no_castore"} "$@" "$certificate" > "$result" 2>&1; then
             echo "Blocked CA is trusted by $store: $certificate" >&2
             exit 1
         fi
@@ -36,7 +42,7 @@ for certificate in "$test_dir"/certificates/*.crt "$test_dir"/certificates/cross
 done
 
 # Confirm that an unrelated root remains usable after rebuilding the store.
-openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt -no-CApath \
+openssl verify ${no_castore:+"$no_castore"} -CAfile /etc/ssl/certs/ca-certificates.crt -no-CApath \
     /usr/share/ca-certificates/mozilla/Amazon_Root_CA_1.crt
-openssl verify -no-CAfile -CApath /etc/ssl/certs \
+openssl verify ${no_castore:+"$no_castore"} -no-CAfile -CApath /etc/ssl/certs \
     /usr/share/ca-certificates/mozilla/Amazon_Root_CA_1.crt
