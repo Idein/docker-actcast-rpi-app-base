@@ -25,7 +25,8 @@ commands:
             sudo apt-get install make
       - run:
           name: Enable usermode emulation
-          command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+          # Keep the interpreter available when running the ARM test containers.
+          command: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
 jobs:
   build:
@@ -40,6 +41,10 @@ jobs:
           name: Build docker image
           command: |
             make FIRMWARE_TYPE=<< parameters.firmware_type >> dist/actcast-rpi-app-base-<< parameters.firmware_type >>.tar.gz -j
+      - run:
+          name: Check blocked certificate authorities
+          command: |
+            docker run --rm -v "$PWD/tests:/tests:ro" idein/actcast-rpi-app-base-<< parameters.firmware_type >> sh /tests/check-ca-certificates.sh
       - store_artifacts:
           path: dist
       - run:
@@ -65,6 +70,11 @@ jobs:
           command: |
             make FIRMWARE_TYPE=<< parameters.firmware_type >> dist/actcast-rpi-app-base-<< parameters.firmware_type >>.tar.gz -j
             make FIRMWARE_TYPE=gui-<< parameters.firmware_type >> dist/actcast-rpi-app-base-gui-<< parameters.firmware_type >>.tar.gz -j
+      - run:
+          name: Check blocked certificate authorities
+          command: |
+            docker run --rm -v "$PWD/tests:/tests:ro" idein/actcast-rpi-app-base-<< parameters.firmware_type >> sh /tests/check-ca-certificates.sh
+            docker run --rm -v "$PWD/tests:/tests:ro" idein/actcast-rpi-app-base-gui-<< parameters.firmware_type >> sh /tests/check-ca-certificates.sh
       - store_artifacts:
           path: dist
       - run:
