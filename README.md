@@ -32,11 +32,6 @@ Raspberry Pi OS のアップグレードに応じて新たなバージョンの�
 生成するrootfsと同じDebianバージョンである必要はない．
 ビルド環境にはbookwormを使用し，bullseyeのrootfsは引き続き `RASPBIAN_VERSION=bullseye` で生成する．
 
-```console
-$ git grep [codename]
-builder:readonly RASPBIAN_VERSION=${RASPBIAN_VERSION:-[codename]}
-```
-
 ## Release
 
 バージョンコードネームのタグを打ってpushするとCircleCI上でイメージがビルドされ，
